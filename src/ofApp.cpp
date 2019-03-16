@@ -5,9 +5,14 @@ elimine parametros en save/load gesto
 
 los gestos pueden manejar un numero arbitrario de parametros, pero json y supercollider no se llevan bien
 por lo que solo uso los cuatro definidos en en un archivo de texto, si no la comunicacion por osc es dificil
+
+KDTree only for 2d search for now
 */
 
 //--------------------------------------------------------------
+ofApp :: ofApp() : hash(points) {
+}
+
 void ofApp::setup(){
 	ofSetFrameRate(60);
 	ofSetWindowTitle("CBCS");
@@ -52,7 +57,7 @@ void ofApp::setup(){
 	iAnalize = -1;
 
 	guiSetup();
-	oscClear(true);
+	oscClear(true);	
 }
 
 //--------------------------------------------------------------
@@ -96,7 +101,7 @@ void ofApp::updateKnn() {
 					pos.y = (mouseY - pointCloudMargin.y) / pointCloud.getHeight();
 					cursor[selFeatures[0]] = pos.x;
 					cursor[selFeatures[1]] = pos.y;
-					findNClosest(knn, cursor, selected);
+					find2Closest(knn, pos, selected);
 					lastSelected.clear();
 					lastSelected = selected;
 					curGesto.record(pos);
@@ -252,7 +257,7 @@ void ofApp::trDDownInput(ofxDatGuiDropdownEvent e) {
 			}
 		}
 	}
-	updateFbo(selFeatures[0], selFeatures[1]);
+	updatePoints(selFeatures[0], selFeatures[1]);
 }
 
 void ofApp::trTextInput(ofxDatGuiTextInputEvent e) {
@@ -306,6 +311,17 @@ void ofApp::findNClosest(int n, map <string, float> pos, vector <vector <float>>
 	}
 	sort(selected.begin(), selected.end(), distanceSort);
 	selected.resize(n);
+}
+
+void ofApp::find2Closest(int n, ofVec2f pos, vector <vector <float>> &selected) {
+	selected.clear();
+	searchResults.clear();
+	searchResults.resize(n);
+	hash.findNClosestPoints(pos, n, searchResults);
+	for (auto result : searchResults) {
+		vector <float> curSample = { (float)result.first, result.second };
+		selected.push_back(curSample);
+	}
 }
 
 void ofApp::normalizeFeatures() {
@@ -366,18 +382,26 @@ void ofApp::addGesture(Gesto curGesto) {
 	indexGesto += 1;
 }
 
-void ofApp::updateFbo(string fFeat, string sFeat) {
+void ofApp::updatePoints(string fFeat, string sFeat) {
 	int fboWidth = pointCloud.getWidth();
-	
+	points.clear();
+
 	pointCloud.begin();
 	ofBackground(255);
+	
 	for (auto sample : samples) {
-		ofSetColor(0, 0, 255);
 		ofVec2f curPos = { sample.getFeatureValue(fFeat), sample.getFeatureValue(sFeat) };
+		points.push_back(curPos);
+		
+		ofSetColor(0, 0, 255);
 		curPos *= fboWidth;
 		ofDrawEllipse(curPos, 5, 5);
+
+		
 	}
+	
 	pointCloud.end();
+	hash.buildIndex();
 }
 
 void ofApp::drawHelp() {
@@ -742,7 +766,7 @@ void ofApp::keyReleased(int key){
 	case 'C':
 		clearAll();
 		oscClear();
-		updateFbo(selFeatures[0], selFeatures[1]);
+		updatePoints(selFeatures[0], selFeatures[1]);
 		break;
 	case 'g':
 	case 'G':
@@ -755,12 +779,12 @@ void ofApp::keyReleased(int key){
 	case 'l':
 	case 'L':
 		loadFile();
-		updateFbo(selFeatures[0], selFeatures[1]);
+		updatePoints(selFeatures[0], selFeatures[1]);
 		break;
 	case 'n':
 	case 'N':
 		normalizeFeatures();
-		updateFbo(selFeatures[0], selFeatures[1]);
+		updatePoints(selFeatures[0], selFeatures[1]);
 		break;
 	case 's':
 		saveFile(false);
@@ -775,7 +799,7 @@ void ofApp::keyReleased(int key){
 					samples.erase(samples.begin() + sample[0]);
 				}
 			}
-			updateFbo(selFeatures[0], selFeatures[1]);
+			updatePoints(selFeatures[0], selFeatures[1]);
 			selected.clear();
 		}
 		break;

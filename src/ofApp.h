@@ -3,12 +3,18 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "ofxDatGui.h"
+#include "ofxSpatialHash.h"
 #include "sample.h"
 #include "gesto.h"
 
 class ofApp : public ofBaseApp{
 
 	public:
+		typedef glm::vec2 Vec2;
+		typedef glm::vec3 Vec3;
+		
+		ofApp();
+		
 		void setup();
 		
 		void update();
@@ -26,10 +32,11 @@ class ofApp : public ofBaseApp{
 		void trTextInput(ofxDatGuiTextInputEvent e);
 		void trButtonInput(ofxDatGuiButtonEvent e);
 
-		void updateFbo(string fFeat, string sFeat);
+		void updatePoints(string fFeat, string sFeat);
 		void drawHelp();
 
 		void findNClosest(int n, map <string, float> pos, vector <vector <float>> &selected);
+		void find2Closest(int n, ofVec2f pos, vector <vector <float>> &selected);
 		void normalizeFeatures();
 		void clearAll();
 
@@ -91,4 +98,9 @@ class ofApp : public ofBaseApp{
 
 		ofxOscSender oscSender;
 		ofxOscReceiver oscReceiver;
+
+		//spatial hash
+		vector<ofVec2f> points;
+		ofx::KDTree<ofVec2f> hash;
+		ofx::KDTree<ofVec2f>::SearchResults searchResults;
 };

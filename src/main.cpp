@@ -1,12 +1,11 @@
 #include "ofMain.h"
 #include "ofApp.h"
-//#include "../resource.h"
-/*
+#include "../resource.h"
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 
 	ofGLFWWindowSettings settings;
-	settings.width = 800;
-	settings.height = 500;
+	settings.setSize(800, 500);
 	settings.resizable = false;
 	ofCreateWindow(settings);
 
@@ -16,10 +15,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	ofRunApp(new ofApp());
 }
-*/
 
+/*
 int main() {
 	ofSetupOpenGL(800, 500, OF_WINDOW);
 	ofRunApp(new ofApp());
 }
+*/
 
