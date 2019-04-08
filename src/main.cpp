@@ -16,10 +16,3 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ofRunApp(new ofApp());
 }
 
-/*
-int main() {
-	ofSetupOpenGL(800, 500, OF_WINDOW);
-	ofRunApp(new ofApp());
-}
-*/
-

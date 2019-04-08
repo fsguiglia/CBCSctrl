@@ -278,8 +278,13 @@
     <ClInclude Include="src\sample.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bin\data\grain.ico" />
+    <Image Include="icon.ico" />
   </ItemGroup>
 </Project>
